@@ -57,19 +57,24 @@ const controlLabelStyle: CSSProperties = {
 };
 
 const selectInputStyle: CSSProperties = {
-  background: '#0f1828',
+  background: 'rgba(15,24,40,0.85)',
   color: 'var(--text)',
-  border: '1px solid var(--panel-border)',
+  border: '1px solid rgba(40,64,97,0.5)',
   borderRadius: 8,
-  padding: '6px 8px'
+  padding: '7px 10px',
+  backdropFilter: 'blur(4px)'
 };
 
 const chipButtonStyle: CSSProperties = {
-  border: '1px solid #365786',
+  border: '1px solid rgba(54,87,134,0.45)',
   borderRadius: 8,
   color: 'var(--text)',
-  padding: '6px 8px',
-  cursor: 'pointer'
+  padding: '6px 10px',
+  cursor: 'pointer',
+  fontSize: 12.5,
+  fontWeight: 500,
+  letterSpacing: 0.2,
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)'
 };
 
 const timelineKindLabel: Record<'intervention' | 'system' | 'adverse', string> = {
@@ -157,14 +162,16 @@ export function Monitor() {
   const current = useMemo(() => deriveDisplayVarsFromPatient(sim.patient), [sim.patient]);
 
   return (
-    <main style={{ padding: 18, display: 'grid', gap: 14, maxWidth: 1680, margin: '0 auto' }}>
+    <main style={{ padding: '20px 18px 32px', display: 'grid', gap: 16, maxWidth: 1700, margin: '0 auto' }}>
       <header
         style={{
-          background: 'linear-gradient(180deg, rgba(16,26,43,0.96) 0%, rgba(11,20,36,0.92) 100%)',
+          background: 'linear-gradient(180deg, rgba(16,26,43,0.88) 0%, rgba(11,18,32,0.85) 100%)',
           border: '1px solid var(--panel-border)',
-          borderRadius: 12,
-          padding: 14,
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
+          borderRadius: 'var(--radius)',
+          padding: '16px 18px',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 24px rgba(0,0,0,0.25)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
           display: 'flex',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
@@ -172,7 +179,7 @@ export function Monitor() {
         }}
       >
         <div style={{ minWidth: 280 }}>
-          <h1 style={{ margin: 0, fontSize: 23, letterSpacing: 0.2 }}>Hemodynamic Monitor EV1000-like</h1>
+          <h1 style={{ margin: 0, fontSize: 22, letterSpacing: 1.2, fontWeight: 700, background: 'linear-gradient(135deg, #e8edf7 0%, #46c2ff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Hemodynamic Monitor</h1>
           <p style={{ margin: '6px 0 0', color: 'var(--muted)', fontSize: 12.5 }}>
             {sim.patient.caseName} | t={Math.round(sim.patient.timeSec)}s | seed={sim.patient.seed}
           </p>
@@ -240,7 +247,7 @@ export function Monitor() {
                 onClick={() => setTrendWindow(600)}
                 style={{
                   ...chipButtonStyle,
-                  background: trendWindowSec === 600 ? '#38577f' : '#1a2c49',
+                  background: trendWindowSec === 600 ? 'linear-gradient(180deg, #38577f 0%, #2d4768 100%)' : 'rgba(26,44,73,0.7)',
                   minWidth: 62
                 }}
               >
@@ -250,7 +257,7 @@ export function Monitor() {
                 onClick={() => setTrendWindow(3600)}
                 style={{
                   ...chipButtonStyle,
-                  background: trendWindowSec === 3600 ? '#38577f' : '#1a2c49',
+                  background: trendWindowSec === 3600 ? 'linear-gradient(180deg, #38577f 0%, #2d4768 100%)' : 'rgba(26,44,73,0.7)',
                   minWidth: 62
                 }}
               >
@@ -260,7 +267,7 @@ export function Monitor() {
                 onClick={() => setTrendWindow(21600)}
                 style={{
                   ...chipButtonStyle,
-                  background: trendWindowSec === 21600 ? '#38577f' : '#1a2c49',
+                  background: trendWindowSec === 21600 ? 'linear-gradient(180deg, #38577f 0%, #2d4768 100%)' : 'rgba(26,44,73,0.7)',
                   minWidth: 62
                 }}
               >
@@ -276,7 +283,7 @@ export function Monitor() {
                 onClick={() => setDensityMode('essential')}
                 style={{
                   ...chipButtonStyle,
-                  background: densityMode === 'essential' ? '#38577f' : '#1a2c49',
+                  background: densityMode === 'essential' ? 'linear-gradient(180deg, #38577f 0%, #2d4768 100%)' : 'rgba(26,44,73,0.7)',
                   minWidth: 84
                 }}
               >
@@ -286,7 +293,7 @@ export function Monitor() {
                 onClick={() => setDensityMode('full')}
                 style={{
                   ...chipButtonStyle,
-                  background: densityMode === 'full' ? '#38577f' : '#1a2c49',
+                  background: densityMode === 'full' ? 'linear-gradient(180deg, #38577f 0%, #2d4768 100%)' : 'rgba(26,44,73,0.7)',
                   minWidth: 84
                 }}
               >
@@ -317,7 +324,7 @@ export function Monitor() {
         onTransfusion={giveTransfusion}
       />
 
-      <section style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 420px) 1fr', gap: 14, alignItems: 'start' }}>
+      <section style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 400px) 1fr', gap: 16, alignItems: 'start' }}>
         {/* Anatomical body diagram */}
         <BodyDiagram patient={sim.patient} />
 
@@ -331,12 +338,15 @@ export function Monitor() {
           <article
             key={section.id}
             style={{
-              background: 'var(--panel)',
+              background: 'linear-gradient(180deg, rgba(16,26,43,0.8) 0%, rgba(12,20,34,0.75) 100%)',
               border: '1px solid var(--panel-border)',
-              borderRadius: 12,
-              padding: 11,
+              borderRadius: 'var(--radius)',
+              padding: '13px 14px',
               display: 'grid',
-              gap: 9
+              gap: 10,
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 4px 20px rgba(0,0,0,0.2)'
             }}
           >
             <h3 style={{ margin: 0, fontSize: 13, color: 'var(--muted)', letterSpacing: 0.3 }}>{section.title}</h3>
@@ -379,25 +389,29 @@ export function Monitor() {
       >
         <section
           style={{
-            background: 'var(--panel)',
+            background: 'linear-gradient(180deg, rgba(16,26,43,0.82) 0%, rgba(12,20,34,0.78) 100%)',
             border: '1px solid var(--panel-border)',
-            borderRadius: 12,
-            padding: 12,
+            borderRadius: 'var(--radius)',
+            padding: 14,
             display: 'grid',
-            gap: 8
+            gap: 8,
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 4px 20px rgba(0,0,0,0.2)'
           }}
         >
-          <h3 style={{ margin: 0, fontSize: 15 }}>Metas clinicas</h3>
+          <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase' as const, color: 'var(--muted)' }}>Metas clinicas</h3>
           {sim.goals.map((goal) => (
             <article
               key={goal.id}
               style={{
-                border: '1px solid #2d476a',
-                borderRadius: 8,
-                padding: 8,
+                border: '1px solid rgba(45,71,106,0.5)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '10px 11px',
                 display: 'grid',
-                gap: 4,
-                background: '#0f1d31'
+                gap: 5,
+                background: 'linear-gradient(180deg, rgba(15,29,49,0.9) 0%, rgba(11,21,38,0.85) 100%)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)'
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -420,27 +434,31 @@ export function Monitor() {
 
         <section
           style={{
-            background: 'var(--panel)',
+            background: 'linear-gradient(180deg, rgba(16,26,43,0.82) 0%, rgba(12,20,34,0.78) 100%)',
             border: '1px solid var(--panel-border)',
-            borderRadius: 12,
-            padding: 12,
+            borderRadius: 'var(--radius)',
+            padding: 14,
             display: 'grid',
             gap: 8,
-            maxHeight: 260,
-            overflowY: 'auto'
+            maxHeight: 280,
+            overflowY: 'auto',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 4px 20px rgba(0,0,0,0.2)'
           }}
         >
-          <h3 style={{ margin: 0, fontSize: 15 }}>Timeline de condutas</h3>
+          <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase' as const, color: 'var(--muted)' }}>Timeline de condutas</h3>
           {[...sim.timeline].reverse().slice(0, 30).map((entry) => (
             <article
               key={entry.id}
               style={{
-                border: '1px solid rgba(50,78,115,0.7)',
-                borderRadius: 8,
-                padding: '6px 8px',
+                border: '1px solid rgba(50,78,115,0.5)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '7px 10px',
                 display: 'grid',
                 gap: 4,
-                background: 'rgba(8,16,28,0.45)'
+                background: 'linear-gradient(180deg, rgba(8,16,28,0.6) 0%, rgba(6,12,22,0.5) 100%)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.02)'
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>

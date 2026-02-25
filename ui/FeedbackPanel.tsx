@@ -28,17 +28,19 @@ export function FeedbackPanel({ message, dominantMechanism, debugDrivers, hidden
   return (
     <section
       style={{
-        background: 'var(--panel)',
+        background: 'linear-gradient(180deg, rgba(16,26,43,0.82) 0%, rgba(12,20,34,0.78) 100%)',
         border: '1px solid var(--panel-border)',
-        borderRadius: 12,
-        padding: 14,
+        borderRadius: 'var(--radius)',
+        padding: '16px 16px',
         display: 'grid',
         gap: 10,
         minHeight: 170,
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)'
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 4px 20px rgba(0,0,0,0.2)'
       }}
     >
-      <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>Feedback fisiologico</h3>
+      <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase' as const, color: 'var(--muted)' }}>Feedback fisiologico</h3>
 
       <div style={{ display: 'grid', gap: 6 }}>
         {lines.map((line, index) => {
@@ -50,12 +52,13 @@ export function FeedbackPanel({ message, dominantMechanism, debugDrivers, hidden
             <article
               key={`${title}_${index}`}
               style={{
-                border: '1px solid rgba(50,78,115,0.7)',
-                background: 'rgba(8,16,28,0.55)',
-                borderRadius: 8,
-                padding: '7px 9px',
+                border: '1px solid rgba(50,78,115,0.5)',
+                background: 'linear-gradient(180deg, rgba(8,16,28,0.7) 0%, rgba(6,12,22,0.6) 100%)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '9px 11px',
                 display: 'grid',
-                gap: 4
+                gap: 4,
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.02)'
               }}
             >
               <strong style={{ color: 'var(--accent)', fontSize: 11.5, letterSpacing: 0.35 }}>{title}</strong>

@@ -26,27 +26,33 @@ interface ControlPanelProps {
 }
 
 const sectionStyle: React.CSSProperties = {
-  border: '1px solid #2d476a',
-  borderRadius: 10,
-  padding: 12,
+  border: '1px solid rgba(45,71,106,0.45)',
+  borderRadius: 'var(--radius-sm)',
+  padding: '14px 14px',
   display: 'grid',
   gap: 12,
-  background: '#0f1d31'
+  background: 'linear-gradient(180deg, rgba(15,29,49,0.92) 0%, rgba(11,21,38,0.88) 100%)',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03), 0 2px 12px rgba(0,0,0,0.15)'
 };
 
 const sectionTitleStyle: React.CSSProperties = {
   margin: 0,
-  fontSize: 13,
-  letterSpacing: 0.3
+  fontSize: 12,
+  fontWeight: 600,
+  letterSpacing: 1,
+  textTransform: 'uppercase' as const,
+  color: 'var(--muted)',
+  opacity: 0.85
 };
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  background: '#0b1526',
+  background: 'rgba(11,21,38,0.8)',
   color: 'var(--text)',
-  border: '1px solid #365786',
+  border: '1px solid rgba(54,87,134,0.5)',
   borderRadius: 8,
-  padding: '6px 8px'
+  padding: '7px 10px',
+  backdropFilter: 'blur(4px)'
 };
 
 const rangeInputStyle: React.CSSProperties = {
@@ -56,12 +62,13 @@ const rangeInputStyle: React.CSSProperties = {
 };
 
 const buttonStyle: React.CSSProperties = {
-  border: '1px solid #365786',
+  border: '1px solid rgba(54,87,134,0.5)',
   borderRadius: 8,
-  background: '#1a2c49',
+  background: 'linear-gradient(180deg, rgba(26,44,73,0.9) 0%, rgba(20,36,60,0.85) 100%)',
   color: 'var(--text)',
-  padding: '7px 10px',
-  cursor: 'pointer'
+  padding: '7px 12px',
+  cursor: 'pointer',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)'
 };
 
 const subtleTextStyle: React.CSSProperties = {
@@ -158,22 +165,32 @@ export function ControlPanel({
   return (
     <section
       style={{
-        background: 'var(--panel)',
+        background: 'linear-gradient(180deg, rgba(16,26,43,0.82) 0%, rgba(12,20,34,0.78) 100%)',
         border: '1px solid var(--panel-border)',
-        borderRadius: 12,
-        padding: 14,
+        borderRadius: 'var(--radius)',
+        padding: '16px 16px',
         display: 'grid',
-        gap: 10
+        gap: 12,
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 4px 20px rgba(0,0,0,0.2)'
       }}
     >
       <div style={{ display: 'flex', gap: 8 }}>
         <button
           onClick={onToggleRunning}
-          style={{ ...buttonStyle, background: running ? '#3b5442' : '#5d3b3b' }}
+          style={{
+            ...buttonStyle,
+            background: running
+              ? 'linear-gradient(180deg, #3b5442 0%, #2d4435 100%)'
+              : 'linear-gradient(180deg, #5d3b3b 0%, #4a2f2f 100%)',
+            fontWeight: 600,
+            letterSpacing: 0.3
+          }}
         >
-          {running ? 'Pausar' : 'Continuar'}
+          {running ? '⏸ Pausar' : '▶ Continuar'}
         </button>
-        <button onClick={onReset} style={{ ...buttonStyle, background: '#2f3753' }}>
+        <button onClick={onReset} style={{ ...buttonStyle, background: 'linear-gradient(180deg, #2f3753 0%, #252d44 100%)' }}>
           Reiniciar caso
         </button>
       </div>

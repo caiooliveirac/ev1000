@@ -20,15 +20,15 @@ const statusColor: Record<NonNullable<MetricCardProps['status']>, string> = {
 };
 
 const statusBorder: Record<NonNullable<MetricCardProps['status']>, string> = {
-  normal: 'rgba(90, 179, 119, 0.45)',
-  warning: 'rgba(243, 171, 66, 0.5)',
-  critical: 'rgba(236, 102, 96, 0.55)'
+  normal: 'rgba(109, 227, 142, 0.35)',
+  warning: 'rgba(248, 192, 95, 0.4)',
+  critical: 'rgba(247, 118, 109, 0.45)'
 };
 
 const statusGlow: Record<NonNullable<MetricCardProps['status']>, string> = {
-  normal: 'rgba(90, 179, 119, 0.12)',
-  warning: 'rgba(243, 171, 66, 0.14)',
-  critical: 'rgba(236, 102, 96, 0.16)'
+  normal: 'rgba(109, 227, 142, 0.08)',
+  warning: 'rgba(248, 192, 95, 0.1)',
+  critical: 'rgba(247, 118, 109, 0.12)'
 };
 
 const valueSizeByCardSize: Record<NonNullable<MetricCardProps['size']>, number> = {
@@ -59,12 +59,15 @@ export function MetricCard({
     <article
       style={{
         background:
-          'linear-gradient(180deg, rgba(16,26,43,0.98) 0%, rgba(14,23,38,0.9) 100%), radial-gradient(120px 30px at 10% 0%, rgba(91,130,178,0.18), transparent 75%)',
+          'linear-gradient(180deg, rgba(16,26,43,0.92) 0%, rgba(12,20,34,0.85) 100%)',
         border: `1px solid ${statusBorder[status]}`,
-        borderRadius: 12,
-        padding: 11,
+        borderRadius: 'var(--radius)',
+        padding: '12px 13px',
         minWidth: minWidthByCardSize[size],
-        boxShadow: `inset 0 1px 0 rgba(255,255,255,0.04), 0 0 0 1px rgba(20,33,53,0.25), 0 8px 20px ${statusGlow[status]}`,
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        boxShadow: `inset 0 1px 0 rgba(255,255,255,0.04), 0 0 0 1px rgba(0,0,0,0.15), 0 8px 24px ${statusGlow[status]}`,
+        transition: 'border-color 0.5s ease, box-shadow 0.5s ease',
         ...cardStyle
       }}
     >
@@ -74,11 +77,12 @@ export function MetricCard({
         </span>
         <span
           style={{
-            width: 10,
-            height: 10,
+            width: 9,
+            height: 9,
             borderRadius: '50%',
             background: statusColor[status],
-            boxShadow: `0 0 10px ${statusGlow[status]}`
+            boxShadow: `0 0 8px ${statusGlow[status]}, 0 0 16px ${statusGlow[status]}`,
+            transition: 'background 0.5s ease, box-shadow 0.5s ease'
           }}
         />
       </div>
