@@ -162,143 +162,79 @@ export function Monitor() {
   const current = useMemo(() => deriveDisplayVarsFromPatient(sim.patient), [sim.patient]);
 
   return (
-    <main style={{ padding: '20px 18px 32px', display: 'grid', gap: 16, maxWidth: 1700, margin: '0 auto' }}>
+    <main className="monitor-main">
       <header
         style={{
           background: 'linear-gradient(180deg, rgba(16,26,43,0.88) 0%, rgba(11,18,32,0.85) 100%)',
           border: '1px solid var(--panel-border)',
           borderRadius: 'var(--radius)',
-          padding: '16px 18px',
+          padding: '14px 14px',
           boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 24px rgba(0,0,0,0.25)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 12
+          display: 'grid',
+          gap: 10
         }}
       >
-        <div style={{ minWidth: 280 }}>
-          <h1 style={{ margin: 0, fontSize: 22, letterSpacing: 1.2, fontWeight: 700, background: 'linear-gradient(135deg, #e8edf7 0%, #46c2ff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Hemodynamic Monitor</h1>
-          <p style={{ margin: '6px 0 0', color: 'var(--muted)', fontSize: 12.5 }}>
+        <div>
+          <h1 style={{ margin: 0, fontSize: 18, letterSpacing: 1.2, fontWeight: 700, background: 'linear-gradient(135deg, #e8edf7 0%, #46c2ff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Hemodynamic Monitor</h1>
+          <p style={{ margin: '4px 0 0', color: 'var(--muted)', fontSize: 11.5 }}>
             {sim.patient.caseName} | t={Math.round(sim.patient.timeSec)}s | seed={sim.patient.seed}
           </p>
-          <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
-            <span
-              style={{
-                border: '1px solid rgba(70,194,255,0.35)',
-                borderRadius: 999,
-                padding: '2px 8px',
-                fontSize: 11,
-                color: 'var(--accent)'
-              }}
-            >
-              Trend: {trendWindowSec === 600 ? '10 min' : trendWindowSec === 3600 ? '1 h' : '6 h'}
-            </span>
-            <span
-              style={{
-                border: '1px solid rgba(157,176,204,0.35)',
-                borderRadius: 999,
-                padding: '2px 8px',
-                fontSize: 11,
-                color: 'var(--muted)'
-              }}
-            >
-              Modo: {densityMode === 'essential' ? 'Essencial' : 'Completo'}
-            </span>
-          </div>
         </div>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'end', flexWrap: 'wrap', flex: '1 1 680px' }}>
+        <div className="monitor-header-controls">
           <label style={controlLabelStyle}>
             Caso
             <select
               value={caseId}
               onChange={(event) => setCaseId(event.target.value)}
-              style={{
-                width: 220,
-                ...selectInputStyle
-              }}
+              style={{ width: '100%', minWidth: 140, maxWidth: 220, ...selectInputStyle }}
             >
               {caseOptions.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.name}
-                </option>
+                <option key={option.id} value={option.id}>{option.name}</option>
               ))}
             </select>
           </label>
 
           <label style={controlLabelStyle}>
-            Seed reproduzivel
+            Seed
             <input
               type="number"
               value={seed}
               onChange={(event) => setSeed(Number(event.target.value || 0))}
-              style={{
-                width: 130,
-                ...selectInputStyle
-              }}
+              style={{ width: 90, ...selectInputStyle }}
             />
           </label>
 
           <div style={controlLabelStyle}>
-            <span>Zoom tendencia</span>
-            <div style={{ display: 'flex', gap: 6 }}>
-              <button
-                onClick={() => setTrendWindow(600)}
-                style={{
-                  ...chipButtonStyle,
-                  background: trendWindowSec === 600 ? 'linear-gradient(180deg, #38577f 0%, #2d4768 100%)' : 'rgba(26,44,73,0.7)',
-                  minWidth: 62
-                }}
-              >
-                10 min
-              </button>
-              <button
-                onClick={() => setTrendWindow(3600)}
-                style={{
-                  ...chipButtonStyle,
-                  background: trendWindowSec === 3600 ? 'linear-gradient(180deg, #38577f 0%, #2d4768 100%)' : 'rgba(26,44,73,0.7)',
-                  minWidth: 62
-                }}
-              >
-                1 h
-              </button>
-              <button
-                onClick={() => setTrendWindow(21600)}
-                style={{
-                  ...chipButtonStyle,
-                  background: trendWindowSec === 21600 ? 'linear-gradient(180deg, #38577f 0%, #2d4768 100%)' : 'rgba(26,44,73,0.7)',
-                  minWidth: 62
-                }}
-              >
-                6 h
-              </button>
+            <span>Trend</span>
+            <div style={{ display: 'flex', gap: 4 }}>
+              {([600, 3600, 21600] as const).map((w) => (
+                <button key={w} onClick={() => setTrendWindow(w)}
+                  style={{
+                    ...chipButtonStyle,
+                    background: trendWindowSec === w ? 'linear-gradient(180deg, #38577f 0%, #2d4768 100%)' : 'rgba(26,44,73,0.7)',
+                    padding: '5px 8px', fontSize: 11.5
+                  }}>
+                  {w === 600 ? '10m' : w === 3600 ? '1h' : '6h'}
+                </button>
+              ))}
             </div>
           </div>
 
           <div style={controlLabelStyle}>
-            <span>Densidade do monitor</span>
-            <div style={{ display: 'flex', gap: 6 }}>
-              <button
-                onClick={() => setDensityMode('essential')}
-                style={{
-                  ...chipButtonStyle,
-                  background: densityMode === 'essential' ? 'linear-gradient(180deg, #38577f 0%, #2d4768 100%)' : 'rgba(26,44,73,0.7)',
-                  minWidth: 84
-                }}
-              >
-                Essencial
-              </button>
-              <button
-                onClick={() => setDensityMode('full')}
-                style={{
-                  ...chipButtonStyle,
-                  background: densityMode === 'full' ? 'linear-gradient(180deg, #38577f 0%, #2d4768 100%)' : 'rgba(26,44,73,0.7)',
-                  minWidth: 84
-                }}
-              >
-                Completo
-              </button>
+            <span>Modo</span>
+            <div style={{ display: 'flex', gap: 4 }}>
+              {(['essential', 'full'] as const).map((m) => (
+                <button key={m} onClick={() => setDensityMode(m)}
+                  style={{
+                    ...chipButtonStyle,
+                    background: densityMode === m ? 'linear-gradient(180deg, #38577f 0%, #2d4768 100%)' : 'rgba(26,44,73,0.7)',
+                    padding: '5px 8px', fontSize: 11.5
+                  }}>
+                  {m === 'essential' ? 'Ess.' : 'Full'}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -324,16 +260,12 @@ export function Monitor() {
         onTransfusion={giveTransfusion}
       />
 
-      <section style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 400px) 1fr', gap: 16, alignItems: 'start' }}>
+      <section className="monitor-body">
         {/* Anatomical body diagram */}
-        <BodyDiagram patient={sim.patient} />
+        <BodyDiagram patient={sim.patient} style={{ maxWidth: '100%', margin: '0 auto' }} />
 
         {/* Metric cards */}
-        <div style={{ display: 'grid', gap: 12 }}>
-        <div style={{ color: 'var(--muted)', fontSize: 12, letterSpacing: 0.2 }}>
-          Modo {densityMode === 'essential' ? 'essencial' : 'completo'}: {displayedMetricKeys.length} variaveis
-          visiveis.
-        </div>
+        <div style={{ display: 'grid', gap: 10 }}>
         {displayedSections.map((section) => (
           <article
             key={section.id}
@@ -341,22 +273,16 @@ export function Monitor() {
               background: 'linear-gradient(180deg, rgba(16,26,43,0.8) 0%, rgba(12,20,34,0.75) 100%)',
               border: '1px solid var(--panel-border)',
               borderRadius: 'var(--radius)',
-              padding: '13px 14px',
+              padding: '10px 10px',
               display: 'grid',
-              gap: 10,
+              gap: 8,
               backdropFilter: 'blur(10px)',
               WebkitBackdropFilter: 'blur(10px)',
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 4px 20px rgba(0,0,0,0.2)'
             }}
           >
-            <h3 style={{ margin: 0, fontSize: 13, color: 'var(--muted)', letterSpacing: 0.3 }}>{section.title}</h3>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: `repeat(auto-fill, minmax(${section.columnsMinWidth}px, 1fr))`,
-                gap: 10
-              }}
-            >
+            <h3 style={{ margin: 0, fontSize: 12, color: 'var(--muted)', letterSpacing: 0.3 }}>{section.title}</h3>
+            <div className="metric-grid">
               {section.metrics.map((metric) => {
                 const currentValue = current[metric.key];
                 const unitLabel = metric.unit ? `${metric.fullName} (${metric.unit})` : metric.fullName;
@@ -380,13 +306,7 @@ export function Monitor() {
         </div>
       </section>
 
-      <section
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: 10
-        }}
-      >
+      <section className="monitor-bottom">
         <section
           style={{
             background: 'linear-gradient(180deg, rgba(16,26,43,0.82) 0%, rgba(12,20,34,0.78) 100%)',

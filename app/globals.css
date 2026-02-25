@@ -113,3 +113,87 @@ input[type="range"] {
     0 4px 24px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(0, 0, 0, 0.15);
 }
+
+/* ── Responsive layout ── */
+
+/* Main monitor grid */
+.monitor-main {
+  padding: 12px 10px 24px;
+  display: grid;
+  gap: 12px;
+  max-width: 1700px;
+  margin: 0 auto;
+}
+
+/* Header controls wrap on mobile */
+.monitor-header-controls {
+  display: flex;
+  gap: 10px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+/* Body: diagram + metrics — stack on mobile, side-by-side on desktop */
+.monitor-body {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+}
+
+/* Metric grid inside each section */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+/* Metric card span-2 for primary metrics */
+.metric-span-2 {
+  grid-column: span 2;
+}
+
+/* Bottom panels (goals + timeline) */
+.monitor-bottom {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+}
+
+/* ── Tablet (≥640px) ── */
+@media (min-width: 640px) {
+  .monitor-main {
+    padding: 16px 14px 28px;
+    gap: 14px;
+  }
+  .metric-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .monitor-bottom {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── Desktop (≥1024px) ── */
+@media (min-width: 1024px) {
+  .monitor-main {
+    padding: 20px 18px 32px;
+    gap: 16px;
+  }
+  .monitor-body {
+    grid-template-columns: minmax(260px, 360px) 1fr;
+  }
+  .metric-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+/* ── Wide desktop (≥1400px) ── */
+@media (min-width: 1400px) {
+  .monitor-body {
+    grid-template-columns: minmax(300px, 400px) 1fr;
+  }
+  .metric-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}

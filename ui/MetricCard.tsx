@@ -32,17 +32,10 @@ const statusGlow: Record<NonNullable<MetricCardProps['status']>, string> = {
 };
 
 const valueSizeByCardSize: Record<NonNullable<MetricCardProps['size']>, number> = {
-  primary: 40,
-  secondary: 34,
-  standard: 30,
-  compact: 26
-};
-
-const minWidthByCardSize: Record<NonNullable<MetricCardProps['size']>, number> = {
-  primary: 260,
-  secondary: 235,
-  standard: 220,
-  compact: 190
+  primary: 32,
+  secondary: 28,
+  standard: 24,
+  compact: 20
 };
 
 export function MetricCard({
@@ -62,8 +55,8 @@ export function MetricCard({
           'linear-gradient(180deg, rgba(16,26,43,0.92) 0%, rgba(12,20,34,0.85) 100%)',
         border: `1px solid ${statusBorder[status]}`,
         borderRadius: 'var(--radius)',
-        padding: '12px 13px',
-        minWidth: minWidthByCardSize[size],
+        padding: '10px 11px',
+        minWidth: 0,
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
         boxShadow: `inset 0 1px 0 rgba(255,255,255,0.04), 0 0 0 1px rgba(0,0,0,0.15), 0 8px 24px ${statusGlow[status]}`,
