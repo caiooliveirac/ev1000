@@ -47,18 +47,26 @@ function Tube3D({ d, width, gradId, opacity = 0.85, pulse, pulseRate, delay }:
     : undefined;
   return (
     <g style={style}>
+      {/* Deep shadow — outer glow for depth */}
+      <path d={d} fill="none"
+        stroke="rgba(0,0,0,0.18)" strokeWidth={width + 5}
+        strokeLinecap="round" opacity={opacity * 0.2} />
       {/* Shadow (wider, darker) */}
       <path d={d} fill="none"
-        stroke="rgba(0,0,0,0.3)" strokeWidth={width + 2}
-        strokeLinecap="round" opacity={opacity * 0.4} />
+        stroke="rgba(0,0,0,0.35)" strokeWidth={width + 2.5}
+        strokeLinecap="round" opacity={opacity * 0.45} />
       {/* Main tube */}
       <path d={d} fill="none"
         stroke={`url(#${gradId})`} strokeWidth={width}
         strokeLinecap="round" opacity={opacity} />
-      {/* Highlight (specular) */}
+      {/* Primary highlight (specular) */}
       <path d={d} fill="none"
-        stroke="rgba(255,255,255,0.12)" strokeWidth={Math.max(width * 0.3, 0.8)}
-        strokeLinecap="round" opacity={opacity * 0.7} />
+        stroke="rgba(255,255,255,0.2)" strokeWidth={Math.max(width * 0.38, 1.0)}
+        strokeLinecap="round" opacity={opacity * 0.75} />
+      {/* Fine rim light */}
+      <path d={d} fill="none"
+        stroke="rgba(255,255,255,0.08)" strokeWidth={Math.max(width * 0.15, 0.5)}
+        strokeLinecap="round" opacity={opacity * 0.5} />
     </g>
   );
 }

@@ -28,7 +28,7 @@ export interface BodyVisuals {
   mapSeverity: number;
 
   // Veins
-  veinWidth: number;       // stroke-width (CVP-dependent)
+  veinWidth: number;       // stroke-width (CVP + BV dependent)
   cvpSeverity: number;
   venousFill: number;      // 0.3–1.2 opacity factor
 
@@ -39,6 +39,7 @@ export interface BodyVisuals {
   // Blood volume
   bvFraction: number;      // 0–1.3
   bvSeverity: number;
+  heartVolumeFactor: number; // 0.7–1.25 — chamber size multiplier
 
   // Tissue
   do2Severity: number;
@@ -71,9 +72,9 @@ export function deriveVisuals(p: PatientState): BodyVisuals {
   const pao2Severity = clamp(1 - (v.pao2 - 50) / 50, 0, 1);
   const evlwFill = clamp((v.evlw - 7) / 22, 0, 1);
 
-  // ── Arteries ──
+  // ── Arteries ── (vasoconstriction → narrower caliber, vasodilation → wider)
   const svrNorm = clamp(v.svr / 1200, 0.3, 2.2);
-  const arteryWidth = remap(svrNorm, 0.3, 2.2, 2.0, 6.5);
+  const arteryWidth = remap(svrNorm, 0.3, 2.2, 7.0, 2.5);
   const mapSeverity =
     v.map < 55 ? 1 :
     v.map < 65 ? remap(v.map, 55, 65, 1, 0.5) :
@@ -86,7 +87,9 @@ export function deriveVisuals(p: PatientState): BodyVisuals {
     v.cvp > 12 ? remap(v.cvp, 12, 18, 0.4, 1) :
     v.cvp < 4  ? remap(v.cvp, 0, 4, 0.8, 0.4) :
     remap(v.cvp, 4, 12, 0.4, 0);
-  const veinWidth = remap(clamp(v.cvp / 18, 0.15, 1.5), 0.15, 1.5, 1.8, 6);
+  const veinWidthCvp = remap(clamp(v.cvp / 18, 0.15, 1.5), 0.15, 1.5, 2.5, 7.5);
+  const bvWidthFactor = clamp(h.bloodVolume / 5000, 0.5, 1.3);   // hypovolemia shrinks, congestion expands
+  const veinWidth = veinWidthCvp * bvWidthFactor;
   const venousFill = clamp(h.bloodVolume / 5500, 0.3, 1.2);
 
   // ── Pulmonary ──
@@ -96,6 +99,7 @@ export function deriveVisuals(p: PatientState): BodyVisuals {
 
   // ── Blood volume ──
   const bvFraction = clamp(h.bloodVolume / 5000, 0.25, 1.3);
+  const heartVolumeFactor = clamp(h.bloodVolume / 5000, 0.7, 1.25);  // heart chambers shrink in hypovolemia, expand in congestion
   const bvSeverity =
     h.bloodVolume < 3500 ? 1 :
     h.bloodVolume < 4200 ? remap(h.bloodVolume, 3500, 4200, 1, 0.4) : 0;
@@ -121,7 +125,7 @@ export function deriveVisuals(p: PatientState): BodyVisuals {
     arteryWidth, mapSeverity,
     veinWidth, cvpSeverity, venousFill,
     pulmonaryWidth, pvrSeverity,
-    bvFraction, bvSeverity,
+    bvFraction, bvSeverity, heartVolumeFactor,
     do2Severity, lactateSeverity, lactateFlash,
     svo2Severity, sao2Brightness,
   };

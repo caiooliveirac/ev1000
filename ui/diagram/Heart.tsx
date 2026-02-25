@@ -13,8 +13,10 @@ import type { BodyVisuals } from './visuals';
 interface Props { vis: BodyVisuals }
 
 export function Heart({ vis }: Props) {
-  const rvCx = 180 + vis.rvDilation * 4;
-  const raCx = 178 + vis.rvDilation * 3;
+  // Anterior view: patient's RIGHT (AD/VD) on viewer's LEFT, patient's LEFT (AE/VE) on viewer's RIGHT
+  const vf = vis.heartVolumeFactor ?? 1;  // volume-dependent chamber size
+  const rvCx = 160 - vis.rvDilation * 4;  // RV expands outward (left)
+  const raCx = 162 - vis.rvDilation * 3;
 
   return (
     <g style={{
@@ -35,34 +37,34 @@ export function Heart({ vis }: Props) {
         fill="url(#heartGrad)" stroke="url(#heartWall)" strokeWidth={1.2}
       />
 
-      {/* ── Left side (viewer's left = anatomical left) ── */}
-      {/* LA */}
-      <ellipse cx={162} cy={158} rx={7} ry={6.5}
-        fill="url(#chamberLV)" opacity={0.55}
-        stroke="rgba(255,200,200,0.2)" strokeWidth={0.4} />
-      {/* LV — main pump */}
-      <ellipse cx={160} cy={174}
-        rx={lerp(7, 10, vis.lvEjection)}
-        ry={lerp(9, 13, vis.lvEjection)}
-        fill="url(#chamberLV)" opacity={0.65}
-        stroke="rgba(255,200,200,0.25)" strokeWidth={0.5} />
-
-      {/* ── Right side ── */}
-      {/* RA */}
+      {/* ── Right heart (viewer's left = patient's right) ── */}
+      {/* RA — Átrio Direito */}
       <ellipse cx={raCx} cy={158}
-        rx={lerp(7, 10, vis.rvDilation)}
-        ry={lerp(6.5, 9, vis.rvDilation)}
+        rx={lerp(7, 10, vis.rvDilation) * vf}
+        ry={lerp(6.5, 9, vis.rvDilation) * vf}
         fill="url(#chamberRV)" opacity={0.5}
         stroke="rgba(200,200,255,0.15)" strokeWidth={0.4} />
-      {/* RV — dilates under strain */}
+      {/* RV — Ventrículo Direito — dilates under strain */}
       <ellipse cx={rvCx} cy={174}
-        rx={lerp(8, 14, vis.rvDilation)}
-        ry={lerp(9, 14, vis.rvDilation)}
+        rx={lerp(8, 14, vis.rvDilation) * vf}
+        ry={lerp(9, 14, vis.rvDilation) * vf}
         fill="url(#chamberRV)" opacity={0.55}
         stroke={vis.rvStrain > 0.4 ? severityAlpha(vis.rvStrain, 0.6) : 'rgba(200,200,255,0.15)'}
         strokeWidth={vis.rvStrain > 0.4 ? 1.3 : 0.5}
         strokeDasharray={vis.rvStrain > 0.5 ? '3 2' : 'none'}
       />
+
+      {/* ── Left heart (viewer's right = patient's left) ── */}
+      {/* LA — Átrio Esquerdo */}
+      <ellipse cx={178} cy={158} rx={7 * vf} ry={6.5 * vf}
+        fill="url(#chamberLV)" opacity={0.55}
+        stroke="rgba(255,200,200,0.2)" strokeWidth={0.4} />
+      {/* LV — Ventrículo Esquerdo — main pump */}
+      <ellipse cx={180} cy={174}
+        rx={lerp(7, 10, vis.lvEjection) * vf}
+        ry={lerp(9, 13, vis.lvEjection) * vf}
+        fill="url(#chamberLV)" opacity={0.65}
+        stroke="rgba(255,200,200,0.25)" strokeWidth={0.5} />
 
       {/* Septum */}
       <line x1={170} y1={150} x2={170} y2={194}
@@ -71,11 +73,11 @@ export function Heart({ vis }: Props) {
       <line x1={146} y1={165} x2={196} y2={165}
         stroke="rgba(255,180,180,0.12)" strokeWidth={0.5} />
 
-      {/* Chamber labels */}
-      <text x={162} y={161} textAnchor="middle" style={labelStyle}>AE</text>
+      {/* Chamber labels — anatomically correct anterior view */}
       <text x={raCx} y={161} textAnchor="middle" style={labelStyle}>AD</text>
-      <text x={160} y={178} textAnchor="middle" style={{ ...labelStyle, opacity: 0.6 }}>VE</text>
+      <text x={178} y={161} textAnchor="middle" style={labelStyle}>AE</text>
       <text x={rvCx} y={177} textAnchor="middle" style={labelStyle}>VD</text>
+      <text x={180} y={178} textAnchor="middle" style={{ ...labelStyle, opacity: 0.6 }}>VE</text>
     </g>
   );
 }
