@@ -285,9 +285,10 @@ const calibratePvrAndVdVeCoupling = (state: PatientState, dt: number): void => {
   );
 
   const obstructiveBaseline = clamp((hidden.basalPVR - 250) / 700, 0, 1.4);
-  const pvrCouplingScale = 0.05 + 0.16 * obstructiveBaseline;
+  const pvrCouplingScale = 0.05 + 0.3 * obstructiveBaseline + 0.12 * pvrBurden;
+  const couplingMin = clamp(0.55 - 0.18 * obstructiveBaseline - 0.1 * pvrBurden, 0.22, 0.55);
   const lvPreloadTarget = clamp(
-    preloadDriver * clamp(1 - pvrCouplingScale * pvrBurden * profile.rightLeftCoupling, 0.55, 1.05),
+    preloadDriver * clamp(1 - pvrCouplingScale * pvrBurden * profile.rightLeftCoupling, couplingMin, 1.05),
     260,
     1600
   );
@@ -319,11 +320,12 @@ const calibratePreloadFromVolume = (state: PatientState, dt: number): void => {
     (sigmoid(hidden.venousReturnFlow, 4.8, 1.45) - 0.5) * (95 + profile.volumeResponsePmsGain * 120);
   const pmsContribution =
     (sigmoid(hidden.meanSystemicFillingPressure, 10.5, 1.6) - 0.5) * (70 + profile.volumeResponsePmsClamp * 45);
+  const leakAttenuation = clamp(1 - hidden.capillaryLeak * 0.22 - hidden.systemicInflammation * 0.05, 0.45, 1);
   const gediFromVolume = clamp(
     670 +
-      bloodVolumeContribution +
-      venousReturnContribution +
-      pmsContribution -
+      bloodVolumeContribution * leakAttenuation +
+      venousReturnContribution * leakAttenuation +
+      pmsContribution * (0.75 + 0.25 * leakAttenuation) -
       intrathoracicBackpressure -
       hidden.ardsSeverity * profile.preloadArdsPenaltyScale +
       congestionVolumeLoad,
@@ -674,7 +676,7 @@ const calibrateEvlwAndCompliance = (
   const pvrExcess = Math.max(0, hidden.pulmonaryResistance - hidden.basalPVR);
   const basalPvrLoad = clamp(hidden.basalPVR / 600, 0.3, 2);
   const pvrBurden = clamp(pvrExcess / Math.max(hidden.basalPVR, 120), 0, 2.2);
-  const peepHemodynamicScale = clamp(0.62 + 0.52 * basalPvrLoad + 0.36 * pvrBurden, 0.55, 2.1);
+  const peepHemodynamicScale = clamp(0.42 + 0.55 * basalPvrLoad + 0.32 * pvrBurden, 0.45, 2.2);
   const peepVrPenalty = clamp(peepAbove * (0.012 + 0.01 * stiffness) * peepHemodynamicScale, 0, 0.8);
 
   const obstructiveBurden = clamp((hidden.basalPVR - 320) / 700 + pvrExcess / 900, 0, 1.2);
@@ -696,14 +698,26 @@ const calibrateEvlwAndCompliance = (
   logClampActivation(state, 'venousReturnFlow.peep', rawVr, hidden.venousReturnFlow, 0, 20);
 
   const coSecondaryPenalty = clamp(
-    peepAbove * (0.003 + 0.0022 * stiffness) * clamp(0.78 + 0.4 * basalPvrLoad + 0.28 * pvrBurden, 0.65, 1.8),
+    peepAbove * (0.0025 + 0.0018 * stiffness) * clamp(0.72 + 0.42 * basalPvrLoad + 0.32 * pvrBurden, 0.6, 1.9),
     0,
     0.11
   );
   const rawCoFlowTarget = 0.72 * visible.cardiacOutput + 0.28 * hidden.venousReturnFlow;
   const coFlowTarget = clamp(rawCoFlowTarget, 0.25, 16);
   logClampActivation(state, 'coFlowTarget.peep', rawCoFlowTarget, coFlowTarget, 0.25, 16);
-  const rawCoTarget = coFlowTarget * (1 - coSecondaryPenalty);
+  const rvAfterloadBurden = clamp(
+    (hidden.pulmonaryResistance - hidden.basalPVR) / Math.max(hidden.basalPVR, 120),
+    0,
+    2.6
+  );
+  const obstructiveLoad = clamp(hidden.basalPVR / 700, 0.35, 2.2);
+  const peepAmplifier = sigmoid(peepAbove, 4.5, 1.8);
+  const rvPenalty = clamp(
+    rvAfterloadBurden * Math.pow(obstructiveLoad, 1.4) * peepAmplifier * 0.6,
+    0,
+    0.85
+  );
+  const rawCoTarget = coFlowTarget * (1 - coSecondaryPenalty - rvPenalty);
   const coTarget = clamp(rawCoTarget, 0.25, 16);
   logClampActivation(state, 'coTarget.peep', rawCoTarget, coTarget, 0.25, 16);
   visible.cardiacOutput += (coTarget - visible.cardiacOutput) * clamp(dt / 9, 0.03, 0.2);
@@ -820,7 +834,8 @@ const calibrateProfileSpecificVolumeResponse = (
 
   const previousVolumeEffectSite = hidden.volumeEffectSite;
   const bolusInputMl = Math.max(0, deltaBloodVolume) + Math.max(0, deltaPms) * 120;
-  const volumeInputTarget = clamp(hidden.recentVolumeLoad + bolusInputMl * 2.6, 0, 2600);
+  const bolusSignal = 1100 * (1 - Math.exp(-bolusInputMl / 750));
+  const volumeInputTarget = clamp(hidden.recentVolumeLoad + bolusSignal, 0, 2600);
   const volumeInputTau = volumeInputTarget > hidden.volumeEffectSite ? 36 : 85;
   hidden.volumeEffectSite +=
     (volumeInputTarget - hidden.volumeEffectSite) * clamp(dt / volumeInputTau, 0.02, 0.2);
@@ -893,15 +908,15 @@ const calibrateProfileSpecificVolumeResponse = (
     1.8
   );
   const positiveScale = clamp(profile.volumeResponseMaxPositive, 0.4, 1.8);
-  const negativeScale = clamp(profile.volumeResponseMaxNegative, 0.3, 1.8);
+  const negativeScale = clamp(profile.volumeResponseMaxNegative, 0.3, 2.6);
 
   const positiveOffset = clamp(
-    (0.1 + 0.62 * doseSignal) * responsiveness * profileVolumeGain * positiveScale,
+    (0.04 + 0.38 * doseSignal) * responsiveness * profileVolumeGain * positiveScale,
     0,
-    1.2
+    0.9
   );
   const obstructionPenalty = 0.18 * rvObstructionSignal * doseSignal;
-  const highDosePenalty = doseSignal * overloadSignal * 0.38;
+  const highDosePenalty = Math.pow(doseSignal, 2.2) * overloadSignal * 0.95;
   const negativeOffset =
     ((0.06 + 0.78 * congestionSignal + 0.52 * rvObstructionSignal) * overloadSignal +
       obstructionPenalty +
@@ -959,12 +974,12 @@ const calibrateProfileSpecificVolumeResponse = (
   if (hidden.volumeChallengeActive && hidden.volumeChallengeReferenceCo > 0.1) {
     const challengeDose = 1 - Math.exp(-hidden.volumeEffectSite / 460);
     const maxFractionGain = clamp(
-      (0.1 + 0.32 * challengeDose) *
+      (0.06 + 0.24 * challengeDose) *
         (0.4 + 0.8 * responsiveness) *
         clamp(profileVolumeGain, 0.55, 1.2) *
         positiveScale,
-      0.05,
-      0.45
+      0.04,
+      0.36
     );
     const upperBound = hidden.volumeChallengeReferenceCo * (1 + maxFractionGain);
     const lowerBound =
@@ -1013,7 +1028,7 @@ const calibrateMapAndDerived = (
   visible.indexedSVR = visible.svr * visible.bsa;
   const volumetricProxy = clamp(
     260 +
-      (hidden.bloodVolume - 3500) * 0.38 +
+      (hidden.bloodVolume - 3500) * (0.16 + profile.gediBloodVolumeWeight * 0.55) +
       (hidden.meanSystemicFillingPressure - 6) * 95 -
       Math.max(0, hidden.rightAtrialPressure - 10) * 8 -
       hidden.ardsSeverity * 25 +
@@ -1031,7 +1046,9 @@ const calibrateMapAndDerived = (
     0,
     2
   );
-  const svvTarget = 8 + preloadSignal * 10.5 + ventilatorySignal * 4.4 - congestionSignal * 5.8;
+  const volumeReliefSignal = clamp((hidden.bloodVolume - 5000) / 550, -2.2, 2.2);
+  const svvTarget =
+    8 + preloadSignal * 10.5 + ventilatorySignal * 4.4 - congestionSignal * 5.8 - volumeReliefSignal * 2.2;
   const rawSvv = svvTarget;
   visible.svv = clamp(svvTarget, 2, 45);
   logClampActivation(state, 'svv.visible', rawSvv, visible.svv, 2, 45);

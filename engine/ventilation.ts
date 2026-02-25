@@ -10,7 +10,7 @@ export const updateVentilation = (
   const hidden = state.hidden;
 
   hidden.ventilatorFio2 += (hidden.ventilatorFio2Target - hidden.ventilatorFio2) * (dt / 20);
-  hidden.ventilatorPeep += (hidden.ventilatorPeepTarget - hidden.ventilatorPeep) * (dt / 55);
+  hidden.ventilatorPeep += (hidden.ventilatorPeepTarget - hidden.ventilatorPeep) * (dt / 80);
   hidden.ventilatorVt += (hidden.ventilatorVtTarget - hidden.ventilatorVt) * (dt / 50);
 
   hidden.ventilatorFio2 = clamp(hidden.ventilatorFio2, 0.21, 1);

@@ -112,11 +112,13 @@ This patch calibrated coefficients in `/engine/model.ts` and `/engine/effects.ts
   - bolus/transfusion timing adjusted for smoother onset/peak/decay behavior
   - crystalloid bolus now induces dynamic hemodilution (Hb concentration effect) with damping
   - crystalloid retention is partial (intravascular fraction), decreasing with capillary leak/inflammation
+  - intravascular retention now also decays with distension/overload to keep high-volume response asymptotic
   - transfusion now honors `targetHb` as a clinical ceiling-like target (response saturates near target)
   - Hb is initialized from hidden physiology when case `initialVisible.hb` is omitted
   - Hb now follows a red-cell mass model (`rbcMass / effective plasma volume`) instead of direct linear concentration drift
   - profile-specific volume response uses asymptotic drives (`sigmoid` + `tanh`) to avoid linear runaway gain
   - volume challenge uses bedside-like markers (`SVV`, `GEDI`, `CVP`, `EVLW`, `LAP/RAP`, `PVR`) to modulate response amplitude
+  - profile parameters now scale preload proxy terms (`bloodVolume`, `Pms`, `venous return`) to separate hypovolemic vs congestive behavior
 - Acid-base/gasometry coupling:
   - lactate rise/fall taus are adaptive (faster worsening under supply stress, slower clearance)
   - HCO3 follows metabolic acid load (lactate + mitochondrial dysfunction + supply dependency)

@@ -22,9 +22,9 @@
     "volumeResponseCongestionScale": 280,
     "volumeResponseCongestionGain": 0.16,
     "volumeResponseEvlwGain": 0.16,
-    "volumeResponseMaxPositive": 0.82,
-    "volumeResponseMaxNegative": 1.45,
-    "volumeResponseTau": 52,
+    "volumeResponseMaxPositive": 0.4,
+    "volumeResponseMaxNegative": 2.6,
+    "volumeResponseTau": 56,
     "lvedpContractilityWeight": 2.4,
     "lvedpAfterloadWeight": 1.8,
     "lvedpVolumeWeight": 1.1
