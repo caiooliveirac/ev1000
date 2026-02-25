@@ -81,7 +81,8 @@ export const updateRightVentricle = (
     14
   );
 
-  coupling.rvOutput = clamp(0.7 * intrinsicRvOutput + 0.3 * coupling.venousReturn, 0.3, 14);
+  const rawRvOutput = clamp(0.7 * intrinsicRvOutput + 0.3 * coupling.venousReturn, 0.3, 14);
+  coupling.rvOutput = rawRvOutput;
 
   const hr = coupling.hr;
   coupling.rvStrokeVolume = clamp((coupling.rvOutput * 1000) / Math.max(hr, 40), 10, 180);
@@ -163,11 +164,15 @@ export const updateLeftVentricle = (
     0.05,
     0.45
   );
-  coupling.lvOutput = clamp(
+  const computedLvOutput = clamp(
     intrinsicLvOutput * (1 - pulmonaryTransferWeight) + coupling.pulmonaryFlow * pulmonaryTransferWeight,
     0.4,
     15
   );
+  // The coupled pass computes biophysical CO internally, but visible.cardiacOutput
+  // is driven by the calibration overlay.  lvOutput is used here for internal
+  // coupling (MAP, LAP balance, SV) but NOT written to visible.cardiacOutput.
+  coupling.lvOutput = computedLvOutput;
 
   coupling.lvStrokeVolume = clamp((coupling.lvOutput * 1000) / Math.max(coupling.hr, 40), 10, 190);
 
@@ -196,7 +201,7 @@ export const updateSystemicCirculation = (
     hidden.basalSVR *
       hidden.basalTone *
       vasoplegiaFactor *
-      (1 + 1.55 * norepiEffect + 1.3 * vasopressinEffect) *
+      (1 + 1.3 * norepiEffect + 1.3 * vasopressinEffect) *
       (1 - 0.14 * dobutamineEffect) *
       (1 + hidden.vasoconstrictionBurden * 0.25),
     220,
@@ -215,7 +220,12 @@ export const updateSystemicCirculation = (
       dobutamineEffect * 17 +
       hidden.arrhythmiaBurden * 26 +
       (coupling.temperature - 37) * 6 -
-      hidden.sedationFactor * 18,
+      hidden.sedationFactor * 18 +
+      // Baroreflex: use calibrated MAP/CO (visible) so the reflex matches
+      // the haemodynamic reality the calibration overlay has established.
+      clamp((65 - state.visible.map) / 15, 0, 1) * 35 +
+      // Low CO compensatory drive (sympathetic activation).
+      clamp((3.5 - state.visible.cardiacOutput) / 2.5, 0, 1) * 15,
     45,
     190
   );
@@ -223,7 +233,7 @@ export const updateSystemicCirculation = (
   coupling.hr += (hrTarget - coupling.hr) * (dt / 15);
   coupling.hr = clamp(coupling.hr, 45, 190);
 
-  const flowNoise = jitter(state.rngState, 0.08);
+  const flowNoise = jitter(state.rngState, 0.02);
   state.rngState = flowNoise.state;
   coupling.lvOutput = clamp(coupling.lvOutput + flowNoise.value, 0.3, 15);
 
@@ -240,7 +250,7 @@ export const updateSystemicCirculation = (
       (hidden.leftAtrialPressure - 10) / 7 +
       hidden.fluidOverload / 2200
   );
-  coupling.evlw = clamp(6.5 + hidden.capillaryLeak * 5.8 + hydrostaticStress * 3.1, 4, 35);
+  coupling.evlw = clamp(3.8 + hidden.capillaryLeak * 5.8 + hydrostaticStress * 3.1, 3, 35);
   coupling.pvpi = clamp(1.15 + (hidden.capillaryLeak * 2.1) / (1 + hydrostaticStress * 0.85), 1, 8);
 
   hidden.pulmonaryResistance = coupling.pvr;

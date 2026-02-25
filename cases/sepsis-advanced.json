@@ -45,7 +45,7 @@
     "itbv": 843,
     "evlw": 11.8,
     "pvpi": 2.6,
-    "do2": 520,
+    "do2": 557,
     "vo2": 230,
     "hb": 8.6,
     "sao2": 93,
@@ -83,7 +83,7 @@
 
     "weightKg": 78,
 
-    "basalSVR": 1200,
+    "basalSVR": 950,
     "basalPVR": 220,
     "venousResistanceBase": 1.2,
     "pulmonaryComplianceBase": 45,

@@ -1,0 +1,21 @@
+services:
+  ev1000:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_BASE_PATH: ${NEXT_PUBLIC_BASE_PATH:-/monitor}
+    container_name: ev1000
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH:-/monitor}
+    ports:
+      - "127.0.0.1:8090:3000"
+    networks:
+      - perguntas_default
+    restart: unless-stopped
+
+networks:
+  perguntas_default:
+    external: true
+    name: perguntas_default

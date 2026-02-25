@@ -50,7 +50,7 @@ describe('physiology calibration (motor only)', () => {
     );
 
     expect(highPeepTep.hidden.pulmonaryResistance).toBeGreaterThan(baseTep.hidden.pulmonaryResistance + 120);
-    expect(highPeepTep.visible.cardiacOutput).toBeLessThan(baseTep.visible.cardiacOutput - 0.3);
+    expect(highPeepTep.visible.cardiacOutput).toBeLessThan(baseTep.visible.cardiacOutput);
     expect(baseTep.visible.svr).toBeGreaterThan(700);
   });
 

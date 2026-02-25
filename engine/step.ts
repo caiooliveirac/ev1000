@@ -112,17 +112,21 @@ const applyScheduledBolusAndTransfusion = (state: PatientState, dt: number): voi
           0,
           0.22
         );
-        // Crystalloid intravascular retention is partial and worsens with leak/inflammation.
+        // Crystalloid intravascular retention: at the moment of infusion ~100%
+        // is IV; by 30 min ~20-25% remains (Hahn 2020).  The effect curve
+        // distributes volume over rise/peak/decay (~5 min), so the fraction
+        // here represents the AVERAGE retention during the hemodynamic window
+        // that a clinician observes (5-15 min), which is ~45-55%.
         const intravascularFraction = clamp(
-          0.46 -
-            leak * 0.12 -
-            inflammation * 0.07 +
+          0.50 -
+            leak * 0.08 -
+            inflammation * 0.05 +
             venousToneComponent +
-            hypovolemiaBonus -
+            hypovolemiaBonus * 0.55 -
             distensionPenalty -
             overloadPenalty,
-          0.08,
-          0.7
+          0.15,
+          0.75
         );
         state.hidden.bloodVolume += infusedVolume * intravascularFraction;
         state.hidden.fluidOverload += infusedVolume * (1 - intravascularFraction);
@@ -266,8 +270,10 @@ const finalizeVisible = (state: PatientState, coupling: CouplingState): PatientS
     ...state.visible,
     hr: coupling.hr,
     strokeVolume: coupling.lvStrokeVolume,
-    cardiacOutput: coupling.lvOutput,
-    cardiacIndex: coupling.lvOutput / Math.max(state.visible.bsa, 1.2),
+    // CO is driven by the calibration overlay (Frank-Starling), not the
+    // coupled biophysical pass — preserve from previous tick.
+    cardiacOutput: state.visible.cardiacOutput,
+    cardiacIndex: state.visible.cardiacOutput / Math.max(state.visible.bsa, 1.2),
     svr: coupling.svr,
     indexedSVR: coupling.svr * state.visible.bsa,
     map: coupling.map,

@@ -107,6 +107,18 @@ export interface HiddenPhysiology {
   volumeCoOffset: number;
   volumeChallengeReferenceCo: number;
   volumeChallengeActive: boolean;
+  equilibriumCO: number;
+  equilibriumGEDI: number;
+  equilibriumSVR: number;
+  equilibriumBloodVolume: number;
+  equilibriumStarlingProduct: number;
+  // Persistent reference values for ratio-anchored coupled pass.
+  // Set on first coupled-pass tick and persisted in hidden state so they
+  // survive the per-tick coupling rebuild.
+  refPmsTarget: number;
+  refVRRaw: number;
+  refRVRaw: number;
+  refLVRaw: number;
   lastCalibrationTick: number;
   dominantLimiter: 'preload' | 'afterload' | 'contractility' | 'vr' | 'mixed';
   limiterLog: Array<{

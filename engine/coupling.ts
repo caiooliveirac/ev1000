@@ -46,6 +46,19 @@ export interface CouplingState {
   be: number;
 
   supplyDependencyIndex: number;
+
+  // Anchor / reference values for ratio-based coupled-pass stabilisation.
+  // "anchor" = initial coupling value (from case init); "ref" = first-tick
+  // raw biophysical output.  ratio = rawNow / ref; target = anchor * ratio.
+  // -1 means "not yet initialised" (lazy-filled on first tick).
+  anchorPms: number;
+  refPmsTarget: number;
+  anchorVR: number;
+  refVRRaw: number;
+  anchorRV: number;
+  refRVRaw: number;
+  anchorLV: number;
+  refLVRaw: number;
 }
 
 export const buildInitialCoupling = (
@@ -97,6 +110,17 @@ export const buildInitialCoupling = (
     hco3: visible.hco3,
     be: visible.be,
 
-    supplyDependencyIndex: hidden.supplyDependencyIndex || 0.2
+    supplyDependencyIndex: hidden.supplyDependencyIndex || 0.2,
+
+    // Anchors (initial coupling values) – set now
+    anchorPms: hidden.meanSystemicFillingPressure || 11,
+    anchorVR: hidden.venousReturnFlow || visible.cardiacOutput,
+    anchorRV: visible.cardiacOutput,
+    anchorLV: visible.cardiacOutput,
+    // References (first-tick raw biophysical outputs) – lazy-initialised
+    refPmsTarget: -1,
+    refVRRaw: -1,
+    refRVRaw: -1,
+    refLVRaw: -1,
   };
 };

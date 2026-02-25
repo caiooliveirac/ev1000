@@ -44,11 +44,13 @@ export const updateMicrocirculation = (
 
   const oxygenCarrying = Math.max(coupling.lvOutput * hidden.hemoglobin * 1.34 * 10, 0.1);
   const extractionGradient = (vo2 * extractionDynamic) / oxygenCarrying;
+  // Fick-based SvO2: SaO2 − VO2/(CO×Hb×1.34×10).
+  // Venous admixture (shunt) mixes arterial blood into the venous sample,
+  // raising measured SvO2 slightly: SvO2_measured = (1-shunt)*SvO2_true + shunt*SaO2.
+  const svo2True = coupling.sao2Fraction * 100 - extractionGradient * 100;
+  const shunt = clamp(hidden.functionalShunt, 0, 0.4);
   const svo2 = clamp(
-    coupling.sao2Fraction * 100 -
-      extractionGradient * 100 +
-      hidden.functionalShunt * 9 +
-      hidden.mitochondrialDysfunction * 5,
+    (1 - shunt) * svo2True + shunt * coupling.sao2Fraction * 100,
     25,
     95
   );
