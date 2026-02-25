@@ -21,18 +21,19 @@ interface Props {
 }
 
 /* ── Path definitions (reused for shadow / main / highlight layers) ── */
+/* Anterior view: arteries exit LV (viewer's right ~185), veins enter RA (viewer's left ~150) */
 const P = {
-  aortaUp:   'M155 168 Q152 150 148 130 Q144 112 140 95',
-  aortaRoot: 'M155 168 L155 195',
-  aortaDown: 'M155 195 Q152 230 148 268 Q145 300 142 330',
-  svcUp:     'M200 82 Q198 100 195 118 Q192 132 190 142',
-  svcRA:     'M190 142 L188 156',
-  ivcDown:   'M188 200 Q190 235 193 270 Q195 300 198 330',
-  ivcRA:     'M188 185 L188 200',
-  paRight:   'M175 155 Q165 135 145 127 Q130 122 118 125',
-  paLeft:    'M175 155 Q185 135 200 127 Q215 122 225 125',
-  pvRight:   'M122 175 Q135 180 150 178 Q158 176 162 172',
-  pvLeft:    'M222 175 Q208 180 195 178 Q185 176 180 172',
+  aortaUp:   'M185 168 Q188 150 192 130 Q196 112 200 95',
+  aortaRoot: 'M185 168 L185 195',
+  aortaDown: 'M185 195 Q188 230 192 268 Q195 300 198 330',
+  svcUp:     'M140 82 Q142 100 145 118 Q148 132 150 142',
+  svcRA:     'M150 142 L152 156',
+  ivcDown:   'M152 200 Q150 235 147 270 Q145 300 142 330',
+  ivcRA:     'M152 185 L152 200',
+  paRight:   'M165 155 Q155 135 145 127 Q130 122 118 125',
+  paLeft:    'M165 155 Q175 135 195 127 Q210 122 225 125',
+  pvRight:   'M122 175 Q135 180 155 176 Q165 174 170 172',
+  pvLeft:    'M222 175 Q208 180 195 176 Q185 174 178 172',
 };
 
 /**
@@ -110,11 +111,11 @@ export function Vessels({ vis, arteryColor, veinColor }: Props) {
 
       {/* Venous (slow, blue) */}
       <circle r={1.8} fill={veinColor} opacity={0.6}>
-        <animateMotion dur={`${pr * 3}s`} repeatCount="indefinite" path={P.svcUp + ' L188 156'} />
+        <animateMotion dur={`${pr * 3}s`} repeatCount="indefinite" path={P.svcUp + ' L152 156'} />
       </circle>
       <circle r={1.5} fill={veinColor} opacity={0.5}>
         <animateMotion dur={`${pr * 4}s`} repeatCount="indefinite"
-          path="M198 330 Q195 300 193 270 Q190 235 188 200 L188 185" />
+          path="M142 330 Q145 300 147 270 Q150 235 152 200 L152 185" />
       </circle>
 
       {/* Pulmonary */}
@@ -126,8 +127,11 @@ export function Vessels({ vis, arteryColor, veinColor }: Props) {
       </circle>
 
       {/* ── FLOW DIRECTION ARROWS ── */}
-      <path d="M148 108 L144 100 L152 100Z" fill={arteryColor} opacity={0.5} />
-      <path d="M193 118 L189 126 L197 126Z" fill={veinColor} opacity={0.5} />
+      {/* Arterial: up on right side */}
+      <path d="M196 108 L192 100 L200 100Z" fill={arteryColor} opacity={0.5} />
+      {/* Venous: down on left side */}
+      <path d="M147 118 L143 126 L151 126Z" fill={veinColor} opacity={0.5} />
+      {/* PA arrows to lungs */}
       <path d="M130 123 L126 128 L132 131Z" fill={veinColor} opacity={0.4} />
       <path d="M215 123 L220 128 L214 131Z" fill={veinColor} opacity={0.4} />
     </>

@@ -48,21 +48,21 @@ export function Metrics({ vis, v, bloodVolume }: Props) {
       <MetricBadge x={170} y={238} label="FC" value={`${Math.round(v.hr)}`} unit="bpm"
         severity={v.hr > 120 ? 0.7 : v.hr < 50 ? 0.8 : 0} size="sm" />
 
-      {/* ── ARTERIAL ── */}
-      <MetricBadge x={110} y={265} label="PAM" value={`${Math.round(v.map)}`} unit="mmHg"
-        severity={vis.mapSeverity} anchor="end" />
-      <MetricBadge x={110} y={291} label="RVS" value={`${Math.round(v.svr)}`}
-        severity={v.svr > 1800 ? 0.7 : v.svr < 600 ? 0.8 : 0.1} anchor="end" size="sm" />
-      <MetricBadge x={110} y={185} label="SVV" value={`${Math.round(v.svv)}`} unit="%"
-        severity={v.svv > 15 ? 0.6 : 0} anchor="end" size="sm" />
+      {/* ── ARTERIAL (viewer's right — near aorta / LV) ── */}
+      <MetricBadge x={230} y={265} label="PAM" value={`${Math.round(v.map)}`} unit="mmHg"
+        severity={vis.mapSeverity} anchor="start" />
+      <MetricBadge x={230} y={291} label="RVS" value={`${Math.round(v.svr)}`}
+        severity={v.svr > 1800 ? 0.7 : v.svr < 600 ? 0.8 : 0.1} anchor="start" size="sm" />
+      <MetricBadge x={230} y={185} label="SVV" value={`${Math.round(v.svv)}`} unit="%"
+        severity={v.svv > 15 ? 0.6 : 0} anchor="start" size="sm" />
 
-      {/* ── VENOUS ── */}
-      <MetricBadge x={230} y={120} label="PVC" value={`${v.cvp.toFixed(0)}`} unit="mmHg"
-        severity={vis.cvpSeverity} anchor="start" size="sm" />
-      <MetricBadge x={230} y={262} label="SvO₂" value={`${Math.round(v.svo2)}`} unit="%"
-        severity={vis.svo2Severity} anchor="start" />
-      <MetricBadge x={230} y={186} label="GEDI" value={`${Math.round(v.gedi)}`}
-        severity={v.gedi < 500 ? 0.8 : v.gedi > 900 ? 0.5 : 0} anchor="start" size="sm" />
+      {/* ── VENOUS (viewer's left — near SVC/IVC / RA) ── */}
+      <MetricBadge x={110} y={120} label="PVC" value={`${v.cvp.toFixed(0)}`} unit="mmHg"
+        severity={vis.cvpSeverity} anchor="end" size="sm" />
+      <MetricBadge x={110} y={262} label="SvO₂" value={`${Math.round(v.svo2)}`} unit="%"
+        severity={vis.svo2Severity} anchor="end" />
+      <MetricBadge x={110} y={186} label="GEDI" value={`${Math.round(v.gedi)}`}
+        severity={v.gedi < 500 ? 0.8 : v.gedi > 900 ? 0.5 : 0} anchor="end" size="sm" />
 
       {/* ── LUNGS ── */}
       <MetricBadge x={112} y={155} label="EVLW" value={v.evlw.toFixed(0)}
