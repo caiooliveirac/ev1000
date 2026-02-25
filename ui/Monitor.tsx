@@ -2,6 +2,7 @@
 
 import { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { caseOptions } from '@/cases';
+import { BodyDiagram } from '@/ui/BodyDiagram';
 import { ControlPanel } from '@/ui/ControlPanel';
 import { FeedbackPanel } from '@/ui/FeedbackPanel';
 import { MetricCard } from '@/ui/MetricCard';
@@ -316,7 +317,12 @@ export function Monitor() {
         onTransfusion={giveTransfusion}
       />
 
-      <section style={{ display: 'grid', gap: 12 }}>
+      <section style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 420px) 1fr', gap: 14, alignItems: 'start' }}>
+        {/* Anatomical body diagram */}
+        <BodyDiagram patient={sim.patient} />
+
+        {/* Metric cards */}
+        <div style={{ display: 'grid', gap: 12 }}>
         <div style={{ color: 'var(--muted)', fontSize: 12, letterSpacing: 0.2 }}>
           Modo {densityMode === 'essential' ? 'essencial' : 'completo'}: {displayedMetricKeys.length} variaveis
           visiveis.
@@ -361,6 +367,7 @@ export function Monitor() {
             </div>
           </article>
         ))}
+        </div>
       </section>
 
       <section

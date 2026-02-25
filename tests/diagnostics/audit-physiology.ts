@@ -5,13 +5,13 @@
  * Usage: npx tsx tests/audit-physiology.ts
  */
 
-import sepsisCase from '../cases/sepsis-advanced.json';
-import eapCardiogenicCase from '../cases/eap-cardiogenico.json';
-import hypovolemicCase from '../cases/choque-hipovolemico-hemorragico.json';
-import tepCase from '../cases/tep-macico-obstrutivo.json';
-import eapPerfilLCase from '../cases/eap-perfil-l.json';
-import { applyIntervention, initializeCase, step } from '../engine/model';
-import { CaseData, Intervention, PatientState } from '../engine/types';
+import sepsisCase from '@/cases/sepsis-advanced.json';
+import eapCardiogenicCase from '@/cases/eap-cardiogenico.json';
+import hypovolemicCase from '@/cases/choque-hipovolemico-hemorragico.json';
+import tepCase from '@/cases/tep-macico-obstrutivo.json';
+import eapPerfilLCase from '@/cases/eap-perfil-l.json';
+import { applyIntervention, initializeCase, step } from '@/engine/model';
+import { CaseData, Intervention, PatientState } from '@/engine/types';
 
 const runFor = (state: PatientState, seconds: number): PatientState => {
   let s = state;

@@ -24,10 +24,10 @@ function traceCase(name: string, caseJson: CaseData) {
   
   // Compare clampLog to see what calibrations are doing
   const clampLog = next.hidden.clampLog || [];
-  const coEntries = clampLog.filter(e => e.label.includes('cardiacOutput') || e.label.includes('coTarget'));
+  const coEntries = clampLog.filter(e => e.includes('cardiacOutput') || e.includes('coTarget'));
   console.log(`  Clamp log CO entries at t=300:`);
   for (const e of coEntries) {
-    console.log(`    ${e.label}: raw=${e.rawValue.toFixed(3)} clamped=${e.clampedValue.toFixed(3)}`);
+    console.log(`    ${e}`);
   }
 }
 
