@@ -116,53 +116,65 @@ input[type="range"] {
 
 /* ── Responsive layout ── */
 
-/* Main monitor grid */
+/*
+ * Mobile-first: tudo em coluna única, dedo arrasta verticalmente.
+ * Zoom out (pinch) revela mais conteúdo, mas por padrão é legível.
+ */
+
+/* Main monitor grid — always single column */
 .monitor-main {
-  padding: 12px 10px 24px;
+  padding: 10px 8px 24px;
   display: grid;
-  gap: 12px;
+  gap: 10px;
   max-width: 1700px;
   margin: 0 auto;
 }
 
-/* Header controls wrap on mobile */
+/* Header controls wrap naturally */
 .monitor-header-controls {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: end;
   flex-wrap: wrap;
 }
 
-/* Body: diagram + metrics — stack on mobile, side-by-side on desktop */
+/* Body: always single column — diagram on top, metrics below */
 .monitor-body {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   grid-template-columns: 1fr;
 }
 
-/* Metric grid inside each section */
+/* Metric grid — 1 column on mobile so cards are full-width and legible */
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 8px;
 }
 
-/* Metric card span-2 for primary metrics */
+/* Primary metric (PAM) always full width */
 .metric-span-2 {
-  grid-column: span 2;
+  grid-column: 1 / -1;
 }
 
-/* Bottom panels (goals + timeline) */
+/* Bottom panels (goals + timeline) — also stacked */
 .monitor-bottom {
   display: grid;
   gap: 10px;
   grid-template-columns: 1fr;
 }
 
-/* ── Tablet (≥640px) ── */
-@media (min-width: 640px) {
+/* ── Larger phones / small tablets (≥420px) ── */
+@media (min-width: 420px) {
+  .metric-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Tablet (≥768px) ── */
+@media (min-width: 768px) {
   .monitor-main {
-    padding: 16px 14px 28px;
+    padding: 14px 14px 28px;
     gap: 14px;
   }
   .metric-grid {
@@ -174,26 +186,26 @@ input[type="range"] {
   }
 }
 
-/* ── Desktop (≥1024px) ── */
+/* ── Desktop (≥1024px) — diagram beside metrics ── */
 @media (min-width: 1024px) {
   .monitor-main {
     padding: 20px 18px 32px;
     gap: 16px;
   }
   .monitor-body {
-    grid-template-columns: minmax(260px, 360px) 1fr;
+    grid-template-columns: minmax(280px, 380px) 1fr;
   }
   .metric-grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
   }
 }
 
 /* ── Wide desktop (≥1400px) ── */
 @media (min-width: 1400px) {
   .monitor-body {
-    grid-template-columns: minmax(300px, 400px) 1fr;
+    grid-template-columns: minmax(320px, 420px) 1fr;
   }
   .metric-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   }
 }

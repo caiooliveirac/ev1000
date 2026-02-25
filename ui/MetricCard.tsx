@@ -32,10 +32,10 @@ const statusGlow: Record<NonNullable<MetricCardProps['status']>, string> = {
 };
 
 const valueSizeByCardSize: Record<NonNullable<MetricCardProps['size']>, number> = {
-  primary: 32,
-  secondary: 28,
-  standard: 24,
-  compact: 20
+  primary: 36,
+  secondary: 30,
+  standard: 26,
+  compact: 22
 };
 
 export function MetricCard({
